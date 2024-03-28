@@ -45,7 +45,7 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-          allowUpdates: = "true"
+          allowUpdates: true
 
       - name: Upload Executable
         id: upload-release-asset
