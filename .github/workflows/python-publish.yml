@@ -31,7 +31,7 @@ jobs:
 
     - name: Build Executable
       run: |
-        pyinstaller --onefile src/main.spec
+        pyinstaller src/main.spec
       working-directory: ${{ github.workspace }}
 
     - name: Create Release
