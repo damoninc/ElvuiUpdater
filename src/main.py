@@ -1,43 +1,40 @@
-import requests
-import shutil
 import os
+import requests
 import json
-import configparser
 import zipfile
 
-ELVUI_URL = "https://api.tukui.org/v1/addon/elvui"
-
-WOW_PATH = ""
-with open('config.json', 'r') as config:
-    config_json = json.load(config)
-    WOW_PATH = config_json['wow_path']
-    config.close()
-
-download_response = requests.get(ELVUI_URL)
-
-
-if download_response.status_code == 200:
-    download_url = download_response.json()['url']
+def main():
+    ELVUI_URL = "https://api.tukui.org/v1/addon/elvui"
     
+    # Load configuration
+    with open('config.json', 'r') as config_file:
+        config_json = json.load(config_file)
+        wow_path = config_json.get('wow_path', '')
     
-    downloaded_file = requests.get(download_url)
-    if downloaded_file.status_code == 200:
-
-        with open(os.path.join(WOW_PATH, 'elvui.zip'), 'wb') as file:
-            file.write(downloaded_file.content)
-            file.close()
+    # Download ELVUI
+    download_response = requests.get(ELVUI_URL)
+    if download_response.status_code == 200:
+        download_url = download_response.json().get('url')
         
-        print('File Downloaded')
+        downloaded_file = requests.get(download_url)
+        if downloaded_file.status_code == 200:
+            # Save downloaded file
+            elvui_zip_path = os.path.join(wow_path, 'elvui.zip')
+            with open(elvui_zip_path, 'wb') as file:
+                file.write(downloaded_file.content)
+            print('ELVUI downloaded successfully.')
 
-        zip_file_path = os.path.join(WOW_PATH, 'elvui.zip')
-        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-            zip_ref.extractall(WOW_PATH)
-            zip_ref.close()
-        print('Files Inserted')
-        os.remove(zip_file_path)
+            # Extract files
+            with zipfile.ZipFile(elvui_zip_path, 'r') as zip_ref:
+                zip_ref.extractall(wow_path)
+            print('ELVUI files extracted.')
+            
+            # Remove downloaded zip file
+            os.remove(elvui_zip_path)
+        else:
+            print('Failed to download ELVUI.')
     else:
-        print('failed to download')
+        print('Failed to reach ELVUI API.')
 
-    
-else:
-    print('failed to reach api')
+if __name__ == "__main__":
+    main()
