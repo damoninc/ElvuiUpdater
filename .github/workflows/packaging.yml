@@ -1,8 +1,10 @@
 name: PyInstaller Workflow
 
 on:
+  push:
+    branches: [main]
   pull_request:
-    types: [closed]
+    branches: [main]
 
 jobs:
   pyinstaller-job:
